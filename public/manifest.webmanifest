@@ -1,0 +1,18 @@
+{
+  "name": "IF POS | Sistema de ventas para comercios",
+  "short_name": "IF POS",
+  "description": "Sistema SaaS de ventas, caja, stock, clientes y reportes para comercios.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070B14",
+  "theme_color": "#070B14",
+  "lang": "es-AR",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
