@@ -1,70 +1,41 @@
-import { supabase, isSupabaseConfigured } from './supabase'
+// Capa de integración del FRONTEND de la landing.
+// El frontend NO habla con Supabase ni con Mercado Pago directamente: sólo llama
+// al backend de la landing (/api/create-checkout, Vercel Serverless), que tiene
+// la service_role key y el token de MP. Ahí se crea el checkout; la cuenta se
+// crea recién cuando el pago se confirma (webhook).
 
-/**
- * Capa de integración landing → SaaS.
- * Hace el alta REAL del negocio (Supabase Auth) y, si el plan tiene precio,
- * crea el checkout de Mercado Pago (Edge Function create-checkout) para redirigir.
- *
- * El trigger handle_new_user() del SaaS crea negocio + profile + suscripción
- * trial con el plan_code que mandamos acá. El webhook de MP la pasa a 'active'.
- */
-
-export interface RegisterInput {
+export interface CheckoutInput {
+  name: string
   email: string
-  password: string
-  ownerName: string
   businessName: string
-  category: string
+  industry: string
   planCode: string
-  /** Si el plan tiene precio (no enterprise), redirige a pagar. */
-  withCheckout: boolean
 }
 
-export type RegisterResult =
-  | { mode: 'redirect'; url: string } // hay que ir a pagar a Mercado Pago
-  | { mode: 'trial' } // cuenta creada en trial (plan sin precio / enterprise)
-  | { mode: 'confirm-email' } // falta confirmar el email antes de continuar
+export type CheckoutResult =
+  | { mode: 'redirect'; url: string } // ir a pagar a Mercado Pago
+  | { mode: 'unavailable' } // backend/MP todavía no configurado → fallback demo
 
-/** Traduce errores comunes de Supabase Auth al español. */
-function friendly(message: string): string {
-  const m = message.toLowerCase()
-  if (m.includes('already registered') || m.includes('already been registered'))
-    return 'Ya existe una cuenta con ese email.'
-  if (m.includes('at least 6')) return 'La contraseña debe tener al menos 6 caracteres.'
-  if (m.includes('email') && m.includes('invalid')) return 'El email no es válido.'
-  return message
-}
+/** Pide el checkout al backend de la landing y devuelve la URL de pago. */
+export async function startCheckout(input: CheckoutInput): Promise<CheckoutResult> {
+  let res: Response
+  try {
+    res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    })
+  } catch {
+    // No hay backend (ej. dev sin functions) → modo demo.
+    return { mode: 'unavailable' }
+  }
 
-export async function registerAndCheckout(input: RegisterInput): Promise<RegisterResult> {
-  if (!isSupabaseConfigured) throw new Error('Supabase no está configurado.')
+  // 503 = MP todavía no configurado; 404 = sin backend. Tratamos como demo.
+  if (res.status === 503 || res.status === 404) return { mode: 'unavailable' }
 
-  // 1) Alta real. La metadata la lee handle_new_user() en el SaaS.
-  const { data, error } = await supabase.auth.signUp({
-    email: input.email,
-    password: input.password,
-    options: {
-      data: {
-        business_name: input.businessName,
-        owner_name: input.ownerName,
-        category: input.category,
-        plan_code: input.planCode,
-      },
-    },
-  })
-  if (error) throw new Error(friendly(error.message))
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.error ?? 'No pudimos iniciar el pago. Probá de nuevo.')
+  if (!data?.init_point) throw new Error('El checkout no devolvió una URL de pago.')
 
-  // Confirmación de email activada → no hay sesión hasta verificar el mail.
-  if (!data.session) return { mode: 'confirm-email' }
-
-  // 2) Plan sin precio (enterprise) → queda en trial, sin checkout.
-  if (!input.withCheckout) return { mode: 'trial' }
-
-  // 3) Checkout de Mercado Pago. invoke() adjunta el JWT de la sesión + apikey.
-  const { data: co, error: coErr } = await supabase.functions.invoke('create-checkout', {
-    body: { planCode: input.planCode },
-  })
-  if (coErr) throw new Error('No pudimos iniciar el pago. Probá de nuevo en unos segundos.')
-  if (!co?.init_point) throw new Error('El checkout no devolvió una URL de pago.')
-
-  return { mode: 'redirect', url: co.init_point as string }
+  return { mode: 'redirect', url: data.init_point as string }
 }

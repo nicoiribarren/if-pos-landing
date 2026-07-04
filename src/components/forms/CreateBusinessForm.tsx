@@ -10,13 +10,11 @@ import { industryOptions } from '@/data/formOptions'
 import { plans, type PlanId } from '@/data/plans'
 import { useToast } from '@/hooks/useToast'
 import { saveLead } from '@/utils/leadStorage'
-import { isSupabaseConfigured } from '@/lib/supabase'
-import { registerAndCheckout } from '@/lib/checkout'
+import { startCheckout } from '@/lib/checkout'
 
 const schema = z.object({
   name: z.string().min(2, 'Ingresá tu nombre'),
   email: z.string().email('Ingresá un email válido'),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
   businessName: z.string().min(2, 'Ingresá el nombre del negocio'),
   industry: z.string().min(1, 'Elegí un rubro'),
   plan: z.string().min(1, 'Elegí un plan'),
@@ -25,10 +23,9 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const provisioning = [
-  'Creando workspace del negocio',
-  'Configurando espacio privado y datos aislados',
-  'Activando POS, caja y stock',
-  'Negocio listo para vender',
+  'Preparando tu suscripción',
+  'Generando el pago seguro',
+  'Redirigiendo a Mercado Pago',
 ]
 
 export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: PlanId; onDone?: () => void }) {
@@ -55,56 +52,44 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
     return () => clearInterval(timer)
   }
 
-  async function onSubmit(values: FormValues) {
-    const selected = plans.find((p) => p.id === values.plan)
-    const isPaid = selected?.monthly != null && selected.monthly > 0
-
-    // Fallback modo demo: sin Supabase configurado, se simula como antes.
-    if (!isSupabaseConfigured) {
-      setStep('provisioning')
-      for (let i = 0; i < provisioning.length; i++) {
-        await new Promise((r) => setTimeout(r, 650))
-        setProgress(i + 1)
-      }
-      saveLead({ type: 'negocio_demo', ...values, plan: values.plan as PlanId })
-      setStep('done')
-      toast({ variant: 'success', title: 'Negocio creado en modo demo', description: `${values.businessName} ya tiene su espacio.` })
-      return
+  // Fallback modo demo (dev sin backend / MP aún no configurado): simula el alta.
+  async function runDemo(values: FormValues) {
+    setStep('provisioning')
+    for (let i = 0; i < provisioning.length; i++) {
+      await new Promise((r) => setTimeout(r, 600))
+      setProgress(i + 1)
     }
+    saveLead({ type: 'negocio_demo', ...values, plan: values.plan as PlanId })
+    setStep('done')
+    toast({ variant: 'success', title: 'Negocio creado en modo demo', description: `${values.businessName} ya tiene su espacio.` })
+  }
 
-    // Flujo real: alta en el SaaS + (si el plan tiene precio) checkout Mercado Pago.
+  async function onSubmit(values: FormValues) {
     setStep('provisioning')
     const stop = animateProvisioning()
     try {
-      const res = await registerAndCheckout({
+      // Pide el checkout al backend de la landing. La cuenta se crea recién
+      // cuando el pago se confirma (webhook) → email para definir contraseña.
+      const res = await startCheckout({
+        name: values.name,
         email: values.email,
-        password: values.password,
-        ownerName: values.name,
         businessName: values.businessName,
-        category: values.industry,
+        industry: values.industry,
         planCode: values.plan,
-        withCheckout: isPaid,
       })
       stop()
       setProgress(provisioning.length)
 
       if (res.mode === 'redirect') {
-        // A Mercado Pago. La suscripción se activa con el webhook al aprobarse.
         window.location.href = res.url
         return
       }
-      if (res.mode === 'confirm-email') {
-        setStep('form')
-        toast({ variant: 'success', title: 'Confirmá tu email', description: 'Te enviamos un mail para verificar tu cuenta. Confirmalo y entrá al sistema.' })
-        return
-      }
-      // Trial sin pago (enterprise / plan a medida).
-      setStep('done')
-      toast({ variant: 'success', title: 'Negocio creado', description: `${values.businessName} ya tiene su espacio en prueba.` })
+      // Backend/MP no disponible → caemos a demo para no romper la landing.
+      await runDemo(values)
     } catch (e) {
       stop()
       setStep('form')
-      toast({ variant: 'warning', title: 'No pudimos crear tu negocio', description: e instanceof Error ? e.message : 'Reintentá en unos segundos.' })
+      toast({ variant: 'warning', title: 'No pudimos iniciar el pago', description: e instanceof Error ? e.message : 'Reintentá en unos segundos.' })
     }
   }
 
@@ -166,9 +151,6 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
         <FieldShell id="cb-email" label="Email" required error={errors.email?.message}>
           <Input id="cb-email" type="email" placeholder="tu@email.com" invalid={!!errors.email} {...register('email')} />
         </FieldShell>
-        <FieldShell id="cb-password" label="Contraseña" required error={errors.password?.message}>
-          <Input id="cb-password" type="password" placeholder="Mínimo 6 caracteres" autoComplete="new-password" invalid={!!errors.password} {...register('password')} />
-        </FieldShell>
         <FieldShell id="cb-business" label="Nombre del negocio" required error={errors.businessName?.message}>
           <Input id="cb-business" placeholder="Ej. Kiosco Centro" invalid={!!errors.businessName} {...register('businessName')} />
         </FieldShell>
@@ -199,12 +181,11 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
       </FieldShell>
 
       <Button type="submit" size="lg" icon={Rocket} fullWidth>
-        Crear mi negocio
+        Continuar al pago
       </Button>
       <p className="text-center text-xs text-faint">
-        {isSupabaseConfigured
-          ? 'Creamos tu negocio real en el sistema. Si el plan tiene precio, te llevamos a Mercado Pago para activarlo.'
-          : 'Simulación: creamos un negocio de demostración en este navegador. No se crea ningún tenant real.'}
+        Te llevamos a Mercado Pago para activar tu suscripción. Cuando el pago se
+        confirma, creamos tu negocio y te enviamos un email para definir tu contraseña.
       </p>
     </form>
   )
