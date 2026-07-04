@@ -10,10 +10,13 @@ import { industryOptions } from '@/data/formOptions'
 import { plans, type PlanId } from '@/data/plans'
 import { useToast } from '@/hooks/useToast'
 import { saveLead } from '@/utils/leadStorage'
+import { isSupabaseConfigured } from '@/lib/supabase'
+import { registerAndCheckout } from '@/lib/checkout'
 
 const schema = z.object({
   name: z.string().min(2, 'Ingresá tu nombre'),
   email: z.string().email('Ingresá un email válido'),
+  password: z.string().min(6, 'Mínimo 6 caracteres'),
   businessName: z.string().min(2, 'Ingresá el nombre del negocio'),
   industry: z.string().min(1, 'Elegí un rubro'),
   plan: z.string().min(1, 'Elegí un plan'),
@@ -42,15 +45,67 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
     defaultValues: { plan: defaultPlan ?? '' },
   })
 
+  // Avanza la animación de provisioning en paralelo mientras corre el alta real.
+  function animateProvisioning(): () => void {
+    let i = 0
+    const timer = setInterval(() => {
+      i = Math.min(i + 1, provisioning.length - 1)
+      setProgress(i)
+    }, 650)
+    return () => clearInterval(timer)
+  }
+
   async function onSubmit(values: FormValues) {
-    setStep('provisioning')
-    for (let i = 0; i < provisioning.length; i++) {
-      await new Promise((r) => setTimeout(r, 650))
-      setProgress(i + 1)
+    const selected = plans.find((p) => p.id === values.plan)
+    const isPaid = selected?.monthly != null && selected.monthly > 0
+
+    // Fallback modo demo: sin Supabase configurado, se simula como antes.
+    if (!isSupabaseConfigured) {
+      setStep('provisioning')
+      for (let i = 0; i < provisioning.length; i++) {
+        await new Promise((r) => setTimeout(r, 650))
+        setProgress(i + 1)
+      }
+      saveLead({ type: 'negocio_demo', ...values, plan: values.plan as PlanId })
+      setStep('done')
+      toast({ variant: 'success', title: 'Negocio creado en modo demo', description: `${values.businessName} ya tiene su espacio.` })
+      return
     }
-    saveLead({ type: 'negocio_demo', ...values, plan: values.plan as PlanId })
-    setStep('done')
-    toast({ variant: 'success', title: 'Negocio creado en modo demo', description: `${values.businessName} ya tiene su espacio.` })
+
+    // Flujo real: alta en el SaaS + (si el plan tiene precio) checkout Mercado Pago.
+    setStep('provisioning')
+    const stop = animateProvisioning()
+    try {
+      const res = await registerAndCheckout({
+        email: values.email,
+        password: values.password,
+        ownerName: values.name,
+        businessName: values.businessName,
+        category: values.industry,
+        planCode: values.plan,
+        withCheckout: isPaid,
+      })
+      stop()
+      setProgress(provisioning.length)
+
+      if (res.mode === 'redirect') {
+        // A Mercado Pago. La suscripción se activa con el webhook al aprobarse.
+        window.location.href = res.url
+        return
+      }
+      if (res.mode === 'confirm-email') {
+        setStep('form')
+        toast({ variant: 'success', title: 'Confirmá tu email', description: 'Te enviamos un mail para verificar tu cuenta. Confirmalo y entrá al sistema.' })
+        return
+      }
+      // Trial sin pago (enterprise / plan a medida).
+      setStep('done')
+      toast({ variant: 'success', title: 'Negocio creado', description: `${values.businessName} ya tiene su espacio en prueba.` })
+    } catch (e) {
+      stop()
+      setStep('form')
+      toast({ variant: 'warning', title: 'No pudimos crear tu negocio', description: e instanceof Error ? e.message : 'Reintentá en unos segundos.' })
+    }
   }
 
   if (step === 'provisioning') {
@@ -111,6 +166,9 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
         <FieldShell id="cb-email" label="Email" required error={errors.email?.message}>
           <Input id="cb-email" type="email" placeholder="tu@email.com" invalid={!!errors.email} {...register('email')} />
         </FieldShell>
+        <FieldShell id="cb-password" label="Contraseña" required error={errors.password?.message}>
+          <Input id="cb-password" type="password" placeholder="Mínimo 6 caracteres" autoComplete="new-password" invalid={!!errors.password} {...register('password')} />
+        </FieldShell>
         <FieldShell id="cb-business" label="Nombre del negocio" required error={errors.businessName?.message}>
           <Input id="cb-business" placeholder="Ej. Kiosco Centro" invalid={!!errors.businessName} {...register('businessName')} />
         </FieldShell>
@@ -144,7 +202,9 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
         Crear mi negocio
       </Button>
       <p className="text-center text-xs text-faint">
-        Simulación: creamos un negocio de demostración en este navegador. No se crea ningún tenant real.
+        {isSupabaseConfigured
+          ? 'Creamos tu negocio real en el sistema. Si el plan tiene precio, te llevamos a Mercado Pago para activarlo.'
+          : 'Simulación: creamos un negocio de demostración en este navegador. No se crea ningún tenant real.'}
       </p>
     </form>
   )
