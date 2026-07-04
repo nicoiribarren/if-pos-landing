@@ -5,7 +5,7 @@ import { Reveal } from '@/components/ui/Reveal'
 import { plans, comparison, type ComparisonRow } from '@/data/plans'
 import { cn } from '@/utils/cn'
 
-const cols = ['starter', 'pro', 'business', 'enterprise'] as const
+const cols = ['basico', 'pro', 'premium'] as const
 
 function Cell({ value }: { value: boolean | string }) {
   if (value === true) return <Check className="mx-auto size-4 text-[var(--color-cyan)]" />

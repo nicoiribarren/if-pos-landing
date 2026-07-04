@@ -54,7 +54,7 @@ export const industries: Industry[] = [
     problem: 'Muchísimas ventas chicas por día y una caja difícil de cuadrar.',
     solution: 'POS rapidísimo, cierre de caja claro y control de los productos que más rotan.',
     useful: ['POS', 'Caja', 'Stock'],
-    plan: 'starter',
+    plan: 'basico',
     cta: 'Quiero usarlo en mi kiosco',
   },
   {
@@ -84,7 +84,7 @@ export const industries: Industry[] = [
     problem: 'Ventas por mayor, cuentas corrientes y logística de proveedores.',
     solution: 'Cuenta corriente, compras a proveedores y control de stock de gran volumen.',
     useful: ['Cuenta corriente', 'Proveedores', 'Stock'],
-    plan: 'business',
+    plan: 'premium',
     cta: 'Quiero usarlo en mi distribuidora',
   },
   {
@@ -94,7 +94,7 @@ export const industries: Industry[] = [
     problem: 'Cuotas, productos de kiosco interno y varios turnos de personal.',
     solution: 'Clientes con historial, usuarios por turno y caja controlada por recepción.',
     useful: ['Clientes', 'Usuarios', 'Caja'],
-    plan: 'business',
+    plan: 'premium',
     cta: 'Quiero usarlo en mi gimnasio',
   },
   {
@@ -114,7 +114,7 @@ export const industries: Industry[] = [
     problem: 'Miles de productos chicos y clientes que compran a cuenta.',
     solution: 'Búsqueda rápida por código, cuenta corriente y alertas de reposición.',
     useful: ['POS', 'Stock', 'Cuenta corriente'],
-    plan: 'business',
+    plan: 'premium',
     cta: 'Quiero usarlo en mi ferretería',
   },
   {
@@ -144,7 +144,7 @@ export const industries: Industry[] = [
     problem: 'Local físico y ventas por redes, todo anotado en distintos lados.',
     solution: 'Un solo sistema para ordenar ventas, stock y clientes desde el primer día.',
     useful: ['POS', 'Stock', 'Clientes'],
-    plan: 'starter',
+    plan: 'basico',
     cta: 'Quiero usarlo en mi emprendimiento',
   },
 ]
