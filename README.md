@@ -70,3 +70,6 @@ src/
 ```
 
 Para conectar un backend real más adelante: reemplazar `src/utils/leadStorage.ts` por llamadas a tu API; los formularios y modales ya están desacoplados de la persistencia.
+
+# Deploy automático
+Cada push a `main` deploya a producción vía la integración Git de Vercel.
