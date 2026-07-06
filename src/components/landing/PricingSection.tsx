@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge'
 import { MotionCard } from '@/components/ui/MotionCard'
 import { plans, planDisclaimer, ANNUAL_DISCOUNT, type Plan } from '@/data/plans'
 import { formatCurrency } from '@/utils/formatCurrency'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { cn } from '@/utils/cn'
 
 export function PricingSection() {

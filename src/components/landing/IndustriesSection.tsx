@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { industries } from '@/data/industries'
 import { plans } from '@/data/plans'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { cn } from '@/utils/cn'
 
 export function IndustriesSection() {

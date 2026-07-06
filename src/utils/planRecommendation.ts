@@ -34,19 +34,16 @@ export function recommendPlan(a: CalculatorAnswers): Recommendation {
   if (a.priority) score += 1
 
   let plan: PlanId
-  if (a.multiBranch && a.integrations && a.users === 'many') plan = 'enterprise'
-  else if (score >= 8) plan = 'business'
+  if ((a.multiBranch || a.integrations) && score >= 8) plan = 'premium'
   else if (score >= 3) plan = 'pro'
-  else plan = 'starter'
+  else plan = 'basico'
 
   const reasons: Record<PlanId, string> = {
-    starter:
-      'Por el tamaño de tu negocio, con Starter ordenás ventas, caja y productos sin pagar de más.',
-    pro: 'Vendés seguido y necesitás más control: Pro suma stock avanzado, cuenta corriente y reportes.',
-    business:
-      'Tu operación tiene equipo y volumen. Business incluye usuarios y permisos, proveedores, auditoría y multi-sucursal preparado.',
-    enterprise:
-      'Buscás sucursales, integraciones y límites a medida. Enterprise se arma según tu operación.',
+    basico:
+      'Por el tamaño de tu negocio, con Básico ordenás ventas, caja y productos sin pagar de más.',
+    pro: 'Vendés seguido y necesitás más control: Pro suma proveedores, cuenta corriente, promociones y reportes.',
+    premium:
+      'Tu operación tiene equipo, varias sucursales o volumen. Premium incluye multi-sucursal, facturación ARCA, reportes y auditoría avanzada.',
   }
 
   return { plan, reason: reasons[plan] }

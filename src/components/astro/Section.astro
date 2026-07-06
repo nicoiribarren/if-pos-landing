@@ -1,0 +1,30 @@
+---
+// Espejo .astro del <Section> React: mismo ritmo vertical y anchors.
+interface Props {
+  id?: string
+  class?: string
+  container?: boolean
+  spacing?: 'default' | 'tight' | 'loose' | 'none'
+}
+
+const { id, class: className, container = true, spacing = 'default' } = Astro.props
+
+const pad = {
+  default: 'py-20 md:py-28',
+  tight: 'py-14 md:py-20',
+  loose: 'py-24 md:py-36',
+  none: '',
+}[spacing]
+---
+
+<section id={id} class:list={['relative scroll-mt-24', pad, className]}>
+  {
+    container ? (
+      <div class="container-page">
+        <slot />
+      </div>
+    ) : (
+      <slot />
+    )
+  }
+</section>

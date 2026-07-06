@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { navLinks, sectionIds } from '@/config/nav'
 import { useActiveSection } from '@/hooks/useActiveSection'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { cn } from '@/utils/cn'
 
@@ -68,8 +68,8 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge tone="accent" className="hidden xl:inline-flex">
-              SaaS para comercios
+            <Badge tone="success" dot className="hidden xl:inline-flex">
+              Plataforma online
             </Badge>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => openDemo()}>
               Pedir demo

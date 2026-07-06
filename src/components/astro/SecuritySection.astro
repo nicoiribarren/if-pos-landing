@@ -1,0 +1,49 @@
+---
+import { ShieldCheck } from 'lucide-react'
+import Section from './Section.astro'
+import { securityPoints, securityBadges, securityDisclaimer } from '@/data/content'
+---
+
+<Section id="seguridad">
+  <div class="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+    <div data-reveal>
+      <div class="flex max-w-2xl flex-col gap-4">
+        <h2 class="text-3xl font-bold leading-[1.1] text-fg sm:text-4xl md:text-[2.75rem]">
+          Cada negocio tiene sus <span class="text-gradient">datos separados</span>
+        </h2>
+        <p class="text-base leading-relaxed text-muted sm:text-lg">
+          La plataforma está pensada para que múltiples negocios usen el sistema sin mezclar información.
+        </p>
+      </div>
+      <div class="mt-6 flex flex-wrap gap-2">
+        {
+          securityBadges.map((b) => (
+            <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[rgba(59,130,246,0.3)] bg-[var(--color-accent-soft)] px-3 py-1 text-xs font-medium text-[var(--color-accent-bright)]">
+              <ShieldCheck className="size-3.5" />
+              {b}
+            </span>
+          ))
+        }
+      </div>
+      <p class="mt-6 max-w-lg text-xs leading-relaxed text-faint">{securityDisclaimer}</p>
+    </div>
+
+    <div class="grid gap-3 sm:grid-cols-2">
+      {
+        securityPoints.map(({ icon: Icon, title, text }, i) => (
+          <div
+            data-reveal
+            style={`--reveal-delay: ${(i % 2) * 0.08}s`}
+            class="group rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-colors hover:border-[var(--color-line-strong)]"
+          >
+            <span class="grid size-10 place-items-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)]">
+              <Icon className="size-5" />
+            </span>
+            <h3 class="mt-4 text-sm font-semibold text-fg">{title}</h3>
+            <p class="mt-1 text-xs leading-relaxed text-muted">{text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Section>

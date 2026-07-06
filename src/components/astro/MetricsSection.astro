@@ -1,0 +1,28 @@
+---
+import Section from './Section.astro'
+import { quickMetrics } from '@/data/metrics'
+---
+
+<Section spacing="tight">
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+    {
+      quickMetrics.map(({ icon: Icon, value, prefix, suffix, label }, i) => (
+        <div
+          data-reveal
+          style={`--reveal-delay: ${i * 0.06}s`}
+          class="group rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-line-strong)] hover:shadow-[var(--shadow-glow)]"
+        >
+          <span class="grid size-10 place-items-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)] transition-colors group-hover:accent-gradient group-hover:text-[#04121f]">
+            <Icon className="size-5" />
+          </span>
+          <p class="mt-4 text-2xl font-bold text-fg">
+            <span class="tnum" data-count={value} data-prefix={prefix ?? ''} data-suffix={suffix ?? ''}>
+              {prefix}0{suffix}
+            </span>
+          </p>
+          <p class="mt-1 text-xs leading-snug text-muted">{label}</p>
+        </div>
+      ))
+    }
+  </div>
+</Section>

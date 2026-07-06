@@ -212,6 +212,46 @@
   .animate-pulse-ring {
     animation: pulse-ring 2.4s ease-out infinite;
   }
+
+  /* Reveal-on-scroll para secciones estáticas (.astro). El IO de Layout agrega
+     .in-view; --reveal-delay permite stagger por ítem sin JS extra. */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.6s var(--ease-out-expo),
+      transform 0.6s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  [data-reveal].in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Barra de progreso de lectura sin JS (CSS scroll-driven). Si el navegador no
+   soporta animation-timeline, simplemente no se muestra. */
+.scroll-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    height: 2px;
+    z-index: 90;
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    background: linear-gradient(100deg, var(--color-accent), var(--color-cyan));
+    animation: scroll-progress-grow linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes scroll-progress-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
 }
 
 /* Global reduced-motion kill switch (taste-skill 6.B) */

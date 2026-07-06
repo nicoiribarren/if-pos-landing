@@ -1,0 +1,41 @@
+---
+import Section from './Section.astro'
+import SectionHeader from './SectionHeader.astro'
+import { integrations, integrationStatusLabels, type IntegrationStatus } from '@/data/integrations'
+
+const statusStyle: Record<IntegrationStatus, string> = {
+  preparado: 'text-[var(--color-cyan)] border-[rgba(34,211,238,0.3)] bg-[rgba(34,211,238,0.08)]',
+  futuro: 'text-muted border-[var(--color-line-strong)] bg-white/[0.02]',
+  'segun-plan': 'text-[#c4b5fd] border-[rgba(139,92,246,0.3)] bg-[rgba(139,92,246,0.1)]',
+  personalizado: 'text-[var(--color-warning)] border-[rgba(251,191,36,0.3)] bg-[rgba(251,191,36,0.08)]',
+}
+---
+
+<Section>
+  <SectionHeader description="Estas integraciones están contempladas a futuro. Se van habilitando según el roadmap del producto y el plan contratado.">
+    Preparado para <span class="text-gradient">integrar</span> lo que tu negocio necesite
+  </SectionHeader>
+
+  <div class="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      integrations.map(({ icon: Icon, name, description, status }, i) => (
+        <div
+          data-reveal
+          style={`--reveal-delay: ${(i % 3) * 0.07}s`}
+          class="group flex items-start gap-4 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-line-strong)]"
+        >
+          <span class="grid size-11 shrink-0 place-items-center rounded-xl border border-[var(--color-line)] bg-[var(--color-bg-soft)] text-fg transition-colors group-hover:text-[var(--color-accent-bright)]">
+            <Icon className="size-5" />
+          </span>
+          <div class="min-w-0">
+            <h3 class="font-semibold text-fg">{name}</h3>
+            <p class="mt-1 text-sm text-muted">{description}</p>
+            <span class:list={['mt-3 inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-medium', statusStyle[status]]}>
+              {integrationStatusLabels[status]}
+            </span>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>

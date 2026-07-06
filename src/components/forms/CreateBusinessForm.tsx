@@ -10,6 +10,7 @@ import { industryOptions } from '@/data/formOptions'
 import { plans, type PlanId } from '@/data/plans'
 import { useToast } from '@/hooks/useToast'
 import { saveLead } from '@/utils/leadStorage'
+import { startCheckout } from '@/lib/checkout'
 
 const schema = z.object({
   name: z.string().min(2, 'Ingresá tu nombre'),
@@ -22,10 +23,9 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const provisioning = [
-  'Creando workspace del negocio',
-  'Configurando espacio privado y datos aislados',
-  'Activando POS, caja y stock',
-  'Negocio listo para vender',
+  'Preparando tu suscripción',
+  'Generando el pago seguro',
+  'Redirigiendo a Mercado Pago',
 ]
 
 export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: PlanId; onDone?: () => void }) {
@@ -42,15 +42,55 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
     defaultValues: { plan: defaultPlan ?? '' },
   })
 
-  async function onSubmit(values: FormValues) {
+  // Avanza la animación de provisioning en paralelo mientras corre el alta real.
+  function animateProvisioning(): () => void {
+    let i = 0
+    const timer = setInterval(() => {
+      i = Math.min(i + 1, provisioning.length - 1)
+      setProgress(i)
+    }, 650)
+    return () => clearInterval(timer)
+  }
+
+  // Fallback modo demo (dev sin backend / MP aún no configurado): simula el alta.
+  async function runDemo(values: FormValues) {
     setStep('provisioning')
     for (let i = 0; i < provisioning.length; i++) {
-      await new Promise((r) => setTimeout(r, 650))
+      await new Promise((r) => setTimeout(r, 600))
       setProgress(i + 1)
     }
     saveLead({ type: 'negocio_demo', ...values, plan: values.plan as PlanId })
     setStep('done')
     toast({ variant: 'success', title: 'Negocio creado en modo demo', description: `${values.businessName} ya tiene su espacio.` })
+  }
+
+  async function onSubmit(values: FormValues) {
+    setStep('provisioning')
+    const stop = animateProvisioning()
+    try {
+      // Pide el checkout al backend de la landing. La cuenta se crea recién
+      // cuando el pago se confirma (webhook) → email para definir contraseña.
+      const res = await startCheckout({
+        name: values.name,
+        email: values.email,
+        businessName: values.businessName,
+        industry: values.industry,
+        planCode: values.plan,
+      })
+      stop()
+      setProgress(provisioning.length)
+
+      if (res.mode === 'redirect') {
+        window.location.href = res.url
+        return
+      }
+      // Backend/MP no disponible → caemos a demo para no romper la landing.
+      await runDemo(values)
+    } catch (e) {
+      stop()
+      setStep('form')
+      toast({ variant: 'warning', title: 'No pudimos iniciar el pago', description: e instanceof Error ? e.message : 'Reintentá en unos segundos.' })
+    }
   }
 
   if (step === 'provisioning') {
@@ -141,10 +181,11 @@ export function CreateBusinessForm({ defaultPlan, onDone }: { defaultPlan?: Plan
       </FieldShell>
 
       <Button type="submit" size="lg" icon={Rocket} fullWidth>
-        Crear mi negocio
+        Continuar al pago
       </Button>
       <p className="text-center text-xs text-faint">
-        Simulación: creamos un negocio de demostración en este navegador. No se crea ningún tenant real.
+        Te llevamos a Mercado Pago para activar tu suscripción. Cuando el pago se
+        confirma, creamos tu negocio y te enviamos un email para definir tu contraseña.
       </p>
     </form>
   )

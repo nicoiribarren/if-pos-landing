@@ -1,0 +1,86 @@
+---
+import { Check, Minus } from 'lucide-react'
+import Section from './Section.astro'
+import SectionHeader from './SectionHeader.astro'
+import { plans, comparison } from '@/data/plans'
+
+const cols = ['basico', 'pro', 'premium'] as const
+---
+
+<Section id="comparacion" class="bg-[var(--color-bg-soft)]/40">
+  <SectionHeader>Comparación de planes en detalle</SectionHeader>
+
+  <!-- Desktop -->
+  <div data-reveal class="mt-12 hidden overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-line)] lg:block">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="bg-[var(--color-surface)]">
+          <th class="p-4 text-left font-semibold text-muted">Funcionalidad</th>
+          {
+            plans.map((p) => (
+              <th class:list={['p-4 text-center font-semibold', p.featured ? 'text-[var(--color-accent-bright)]' : 'text-fg']}>
+                {p.name}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          comparison.map((row, i) => (
+            <tr class:list={['border-t border-[var(--color-line)]', i % 2 === 1 && 'bg-[var(--color-surface)]/40']}>
+              <td class="p-4 text-muted">
+                {row.label}
+                {row.hint && <span class="ml-1 text-[10px] text-faint">({row.hint})</span>}
+              </td>
+              {cols.map((c) => (
+                <td class="p-4 text-center">
+                  {row[c] === true ? (
+                    <Check className="mx-auto size-4 text-[var(--color-cyan)]" />
+                  ) : row[c] === false ? (
+                    <Minus className="mx-auto size-4 text-faint" />
+                  ) : (
+                    <span class="text-xs text-fg">{row[c]}</span>
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile: cards -->
+  <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:hidden">
+    {
+      plans.map((p) => (
+        <div
+          data-reveal
+          class:list={[
+            'rounded-[var(--radius-lg)] border bg-[var(--color-surface)] p-5',
+            p.featured ? 'border-[var(--color-accent-bright)]/50' : 'border-[var(--color-line)]',
+          ]}
+        >
+          <h3 class="mb-3 text-base font-bold text-fg">{p.name}</h3>
+          <ul class="space-y-2">
+            {comparison.map((row) => (
+              <li class="flex items-center justify-between gap-3 text-xs">
+                <span class="text-muted">{row.label}</span>
+                <span class="shrink-0 text-right">
+                  {row[p.id] === true ? (
+                    <Check className="size-4 text-[var(--color-cyan)]" />
+                  ) : row[p.id] === false ? (
+                    <Minus className="size-4 text-faint" />
+                  ) : (
+                    <span class="text-xs text-fg">{row[p.id]}</span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</Section>

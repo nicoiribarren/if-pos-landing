@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge'
 import { recommendPlan, type CalculatorAnswers } from '@/utils/planRecommendation'
 import { plans } from '@/data/plans'
 import { industryOptions, userRangeOptions, productRangeOptions } from '@/data/formOptions'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { cn } from '@/utils/cn'
 
 const boolQuestions: { key: keyof CalculatorAnswers; label: string }[] = [

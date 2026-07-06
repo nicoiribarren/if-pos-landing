@@ -1,0 +1,73 @@
+---
+import Layout from '@/layouts/Layout.astro'
+
+// Secciones estáticas (.astro): HTML puro, 0 JS hidratado.
+import TrustBar from '@/components/astro/TrustBar.astro'
+import MetricsSection from '@/components/astro/MetricsSection.astro'
+import ProblemSection from '@/components/astro/ProblemSection.astro'
+import ImpactSection from '@/components/astro/ImpactSection.astro'
+import PricingComparison from '@/components/astro/PricingComparison.astro'
+import SecuritySection from '@/components/astro/SecuritySection.astro'
+import IntegrationsSection from '@/components/astro/IntegrationsSection.astro'
+import BenefitsSection from '@/components/astro/BenefitsSection.astro'
+import TimelineSection from '@/components/astro/TimelineSection.astro'
+import TestimonialsSection from '@/components/astro/TestimonialsSection.astro'
+import OnboardingSection from '@/components/astro/OnboardingSection.astro'
+import FinalCTASection from '@/components/astro/FinalCTASection.astro'
+import Footer from '@/components/astro/Footer.astro'
+
+// Islands React: interactividad real. SSR + hidratación según visibilidad.
+import { Navbar } from '@/components/layout/Navbar'
+import { HeroSection } from '@/components/landing/HeroSection'
+import { SolutionSection } from '@/components/landing/SolutionSection'
+import { MultitenantSection } from '@/components/landing/MultitenantSection'
+import { FeaturesSection } from '@/components/landing/FeaturesSection'
+import { ProductShowcase } from '@/components/landing/ProductShowcase'
+import { BusinessSimulationSection } from '@/components/landing/BusinessSimulationSection'
+import { BeforeAfterSection } from '@/components/landing/BeforeAfterSection'
+import { PricingSection } from '@/components/landing/PricingSection'
+import { PlanCalculator } from '@/components/landing/PlanCalculator'
+import { PWASection } from '@/components/landing/PWASection'
+import { IndustriesSection } from '@/components/landing/IndustriesSection'
+import { FAQSection } from '@/components/landing/FAQSection'
+import { ContactSection } from '@/components/landing/ContactSection'
+import { FloatingActions } from '@/components/layout/FloatingActions'
+import { Overlay } from '@/components/overlay/Overlay'
+---
+
+<Layout>
+  <Navbar client:load />
+
+  <main>
+    <HeroSection client:load />
+    <TrustBar />
+    <MetricsSection />
+    <ProblemSection />
+    <SolutionSection client:visible />
+    <MultitenantSection client:visible />
+    <FeaturesSection client:visible />
+    <ProductShowcase client:visible />
+    <BusinessSimulationSection client:visible />
+    <OnboardingSection />
+    <BeforeAfterSection client:visible />
+    <ImpactSection />
+    <PricingSection client:visible />
+    <PricingComparison />
+    <PlanCalculator client:visible />
+    <SecuritySection />
+    <PWASection client:visible />
+    <IntegrationsSection />
+    <IndustriesSection client:visible />
+    <BenefitsSection />
+    <TimelineSection />
+    <TestimonialsSection />
+    <FAQSection client:visible />
+    <ContactSection client:visible />
+    <FinalCTASection />
+  </main>
+
+  <Footer />
+
+  <FloatingActions client:idle />
+  <Overlay client:load />
+</Layout>

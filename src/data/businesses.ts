@@ -4,7 +4,7 @@ export interface DemoBusiness {
   id: string
   name: string
   industry: string
-  plan: Exclude<PlanId, 'enterprise'> | 'business'
+  plan: PlanId
   users: number
   monthlySales: number
   products: number
@@ -36,7 +36,7 @@ export const businesses: DemoBusiness[] = [
     id: 'kiosco-centro',
     name: 'Kiosco Centro',
     industry: 'Kiosco',
-    plan: 'starter',
+    plan: 'basico',
     users: 1,
     monthlySales: 1936,
     products: 214,
@@ -48,7 +48,7 @@ export const businesses: DemoBusiness[] = [
     id: 'tienda-norte',
     name: 'Tienda Norte',
     industry: 'Indumentaria',
-    plan: 'business',
+    plan: 'premium',
     users: 7,
     monthlySales: 461,
     products: 1284,
@@ -72,7 +72,7 @@ export const businesses: DemoBusiness[] = [
     id: 'distribuidora-sur',
     name: 'Distribuidora Sur',
     industry: 'Distribuidora',
-    plan: 'business',
+    plan: 'premium',
     users: 6,
     monthlySales: 318,
     products: 2140,

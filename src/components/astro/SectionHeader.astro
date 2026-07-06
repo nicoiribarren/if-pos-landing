@@ -1,0 +1,33 @@
+---
+// Espejo .astro del <SectionHeader> React. El título entra por slot para
+// permitir spans con gradiente. Reveal via [data-reveal] (IO global de Layout).
+interface Props {
+  eyebrow?: string
+  description?: string
+  align?: 'center' | 'left'
+  class?: string
+}
+
+const { eyebrow, description, align = 'center', class: className } = Astro.props
+---
+
+<div
+  data-reveal
+  class:list={[
+    'flex flex-col gap-4',
+    align === 'center' ? 'mx-auto max-w-2xl items-center text-center' : 'max-w-2xl',
+    className,
+  ]}
+>
+  {
+    eyebrow && (
+      <span class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-bright)]">
+        {eyebrow}
+      </span>
+    )
+  }
+  <h2 class="text-3xl font-bold leading-[1.1] text-fg sm:text-4xl md:text-[2.75rem]">
+    <slot />
+  </h2>
+  {description && <p class="text-base leading-relaxed text-muted sm:text-lg">{description}</p>}
+</div>

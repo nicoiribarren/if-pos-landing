@@ -1,0 +1,61 @@
+---
+import Section from './Section.astro'
+import { impactMetrics, impactDisclaimer } from '@/data/metrics'
+---
+
+<Section class="overflow-hidden">
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 overflow-hidden"
+  >
+    <div class="animate-aurora absolute -left-20 top-1/4 size-[28rem] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.16),transparent_68%)] blur-3xl"></div>
+    <div class="animate-aurora absolute -right-24 bottom-0 size-[30rem] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.12),transparent_68%)] blur-3xl [animation-delay:-9s]"></div>
+  </div>
+
+  <div class="relative">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        impactMetrics.map(({ icon: Icon, value, prefix, suffix, label }, i) => (
+          <div
+            data-reveal
+            style={`--reveal-delay: ${(i % 3) * 0.08}s`}
+            class="impact-card rounded-[var(--radius-xl)] border border-[var(--color-line)] bg-[var(--color-surface)] p-7"
+          >
+            <span class="grid size-10 place-items-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)]">
+              <Icon className="size-5" />
+            </span>
+            <p class="mt-5 text-4xl font-bold tracking-tight sm:text-5xl">
+              <span
+                class="text-gradient-accent tnum"
+                data-count={value}
+                data-prefix={prefix ?? ''}
+                data-suffix={suffix ?? ''}
+              >
+                {prefix}0{suffix}
+              </span>
+            </p>
+            <p class="mt-2 text-sm text-muted">{label}</p>
+            <div class="mt-4 h-1 overflow-hidden rounded-full bg-[var(--color-bg-soft)]">
+              <div
+                class="impact-bar h-full accent-gradient"
+                style={`--bar-width: ${Math.min(100, Math.max(25, value === 0 ? 100 : value))}%`}
+              />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mx-auto mt-8 max-w-2xl text-center text-xs text-faint">{impactDisclaimer}</p>
+  </div>
+</Section>
+
+<style>
+  /* La barrita crece cuando el IO marca la card como visible. */
+  .impact-bar {
+    width: 0;
+    transition: width 1s var(--ease-out-expo) 0.2s;
+  }
+  .impact-card.in-view .impact-bar {
+    width: var(--bar-width);
+  }
+</style>
