@@ -1,0 +1,110 @@
+---
+import '@/styles/globals.css'
+import { site } from '@/config/site'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = `${site.productName} | Sistema de ventas, caja y stock para comercios`,
+  description = 'Sistema SaaS para comercios: POS, caja, stock, clientes, reportes y usuarios en una plataforma multi-negocio preparada para que cada comercio tenga su propio espacio privado.',
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070B14" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${site.productName} | Sistema de ventas para comercios`} />
+    <meta
+      property="og:description"
+      content="Vendé, controlá caja, actualizá stock y mirá reportes desde una sola plataforma. Un SaaS multi-negocio, instalable como PWA."
+    />
+    <meta property="og:site_name" content={`${site.productName} by ${site.company}`} />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:url" content={Astro.site} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${site.productName} | Sistema de ventas para comercios`} />
+    <meta
+      name="twitter:description"
+      content="Un sistema de ventas completo para manejar tu negocio desde una sola plataforma."
+    />
+  </head>
+  <body>
+    <!-- Barra de progreso de lectura: CSS scroll-driven, sin JS -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <slot />
+
+    <!-- Reveal-on-scroll para secciones estáticas: un IO global, sin frameworks -->
+    <script>
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const els = document.querySelectorAll<HTMLElement>('[data-reveal]')
+      if (reduce) {
+        els.forEach((el) => el.classList.add('in-view'))
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('in-view')
+                io.unobserve(e.target)
+              }
+            }
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
+        )
+        els.forEach((el) => io.observe(el))
+      }
+
+      // Contadores animados de secciones estáticas ([data-count]).
+      const counters = document.querySelectorAll<HTMLElement>('[data-count]')
+      if (counters.length) {
+        const fmt = (v: number, dec: number) =>
+          v.toLocaleString('es-AR', { minimumFractionDigits: dec, maximumFractionDigits: dec })
+        const co = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (!e.isIntersecting) continue
+              co.unobserve(e.target)
+              const el = e.target as HTMLElement
+              const target = parseFloat(el.dataset.count ?? '0')
+              const dec = parseInt(el.dataset.decimals ?? '0', 10)
+              const prefix = el.dataset.prefix ?? ''
+              const suffix = el.dataset.suffix ?? ''
+              if (reduce) {
+                el.textContent = prefix + fmt(target, dec) + suffix
+                continue
+              }
+              const t0 = performance.now()
+              const dur = 1600
+              const tick = (now: number) => {
+                const p = Math.min((now - t0) / dur, 1)
+                const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p)
+                el.textContent = prefix + fmt(target * eased, dec) + suffix
+                if (p < 1) requestAnimationFrame(tick)
+              }
+              requestAnimationFrame(tick)
+            }
+          },
+          { threshold: 0.6 },
+        )
+        counters.forEach((el) => co.observe(el))
+      }
+    </script>
+  </body>
+</html>
