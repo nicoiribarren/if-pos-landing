@@ -1,18 +1,22 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Check } from 'lucide-react'
 import { Section } from '@/components/ui/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { MotionCard } from '@/components/ui/MotionCard'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { features, type Feature } from '@/data/features'
+import { Tabs } from '@/components/ui/Tabs'
+import { features, featureCategories, type Feature, type FeatureCategory } from '@/data/features'
 import { useModals } from '@/components/overlay/Overlay'
 import { staggerParent, staggerChild, viewportOnce } from '@/utils/animationVariants'
 
 export function FeaturesSection() {
   const [selected, setSelected] = useState<Feature | null>(null)
+  const [category, setCategory] = useState<FeatureCategory>('venta-diaria')
   const { openDemo } = useModals()
+
+  const visible = features.filter((f) => f.category === category)
 
   return (
     <Section id="funcionalidades" spacing="default">
@@ -22,42 +26,55 @@ export function FeaturesSection() {
             Todo lo que un comercio necesita para <span className="text-gradient">vender y gestionar mejor</span>
           </>
         }
-        description="Un sistema completo, módulo por módulo, para operar el negocio desde una sola plataforma."
+        description="Un sistema completo, agrupado por lo que hacés cada día: vender, controlar, gestionar y administrar."
       />
 
-      <motion.div
-        variants={staggerParent}
-        initial="hidden"
-        whileInView="show"
-        viewport={viewportOnce}
-        className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        style={{ transformStyle: 'preserve-3d' }}
-      >
-        {features.map((f) => (
-          <motion.div key={f.id} variants={staggerChild}>
-            <MotionCard className="h-full p-6">
-              <span className="grid size-12 place-items-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)]">
-                <f.icon className="size-6" />
-              </span>
-              <h3 className="mt-5 text-lg font-semibold text-fg">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{f.short}</p>
-              <ul className="mt-4 space-y-1.5">
-                {f.benefits.map((b) => (
-                  <li key={b} className="flex items-center gap-2 text-xs text-muted">
-                    <Check className="size-3.5 shrink-0 text-[var(--color-cyan)]" /> {b}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => setSelected(f)}
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-accent-bright)] transition-colors hover:text-[var(--color-cyan)]"
-              >
-                Ver más <ArrowRight className="size-4" />
-              </button>
-            </MotionCard>
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="mt-10 flex justify-center">
+        <Tabs
+          tabs={featureCategories.map((c) => ({ id: c.id, label: c.label }))}
+          active={category}
+          onChange={(id) => setCategory(id as FeatureCategory)}
+          layoutId="features-tabs"
+        />
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={category}
+          variants={staggerParent}
+          initial="hidden"
+          animate="show"
+          exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
+          viewport={viewportOnce}
+          className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {visible.map((f) => (
+            <motion.div key={f.id} variants={staggerChild}>
+              <MotionCard className="h-full p-6">
+                <span className="grid size-12 place-items-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)]">
+                  <f.icon className="size-6" />
+                </span>
+                <h3 className="mt-5 text-lg font-semibold text-fg">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{f.short}</p>
+                <ul className="mt-4 space-y-1.5">
+                  {f.benefits.map((b) => (
+                    <li key={b} className="flex items-center gap-2 text-xs text-muted">
+                      <Check className="size-3.5 shrink-0 text-[var(--color-cyan)]" /> {b}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => setSelected(f)}
+                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-accent-bright)] transition-colors hover:text-[var(--color-cyan)]"
+                >
+                  Ver más <ArrowRight className="size-4" />
+                </button>
+              </MotionCard>
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
 
       <Modal open={!!selected} onClose={() => setSelected(null)} size="md" title={selected?.title}>
         {selected && (

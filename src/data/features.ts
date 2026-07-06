@@ -20,6 +20,15 @@ import {
   UserCog,
 } from 'lucide-react'
 
+export type FeatureCategory = 'venta-diaria' | 'control-operativo' | 'gestion' | 'administracion'
+
+export const featureCategories: { id: FeatureCategory; label: string }[] = [
+  { id: 'venta-diaria', label: 'Venta diaria' },
+  { id: 'control-operativo', label: 'Control operativo' },
+  { id: 'gestion', label: 'Gestión' },
+  { id: 'administracion', label: 'Administración' },
+]
+
 export interface Feature {
   id: string
   icon: LucideIcon
@@ -30,9 +39,26 @@ export interface Feature {
   long: string
   includes: string[]
   example: string
+  category: FeatureCategory
 }
 
-export const features: Feature[] = [
+/** Grupo de cada módulo (Venta diaria / Control operativo / Gestión / Administración). */
+const categoryById: Record<string, FeatureCategory> = {
+  pos: 'venta-diaria',
+  caja: 'venta-diaria',
+  comprobantes: 'venta-diaria',
+  stock: 'control-operativo',
+  proveedores: 'control-operativo',
+  promociones: 'control-operativo',
+  clientes: 'gestion',
+  'cuenta-corriente': 'gestion',
+  gastos: 'gestion',
+  reportes: 'administracion',
+  usuarios: 'administracion',
+  pwa: 'administracion',
+}
+
+const baseFeatures: Omit<Feature, 'category'>[] = [
   {
     id: 'pos',
     icon: ScanBarcode,
@@ -154,6 +180,11 @@ export const features: Feature[] = [
     example: 'Una tienda instala el POS en la tablet del mostrador y en el celular del dueño.',
   },
 ]
+
+export const features: Feature[] = baseFeatures.map((f) => ({
+  ...f,
+  category: categoryById[f.id] ?? 'administracion',
+}))
 
 /** Simple icon/label pairs used in marquees and chips. */
 export const featureChips = [

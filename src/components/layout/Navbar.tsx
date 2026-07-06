@@ -68,8 +68,8 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge tone="accent" className="hidden xl:inline-flex">
-              SaaS para comercios
+            <Badge tone="success" dot className="hidden xl:inline-flex">
+              Plataforma online
             </Badge>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => openDemo()}>
               Pedir demo

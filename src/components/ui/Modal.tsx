@@ -32,6 +32,9 @@ export function Modal({
 
   const widths = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl' }
 
+  // SSR (islands de Astro): no hay document y los modales arrancan cerrados.
+  if (typeof document === 'undefined') return null
+
   return createPortal(
     <AnimatePresence>
       {open && (

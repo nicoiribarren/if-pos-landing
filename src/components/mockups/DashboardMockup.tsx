@@ -23,15 +23,16 @@ import { useToast } from '@/hooks/useToast'
 import { cn } from '@/utils/cn'
 
 const tabs: TabDef[] = [
+  { id: 'resumen', label: 'Resumen', icon: LayoutDashboard },
   { id: 'ventas', label: 'Ventas', icon: ShoppingCart },
   { id: 'caja', label: 'Caja', icon: Wallet },
   { id: 'stock', label: 'Stock', icon: Boxes },
   { id: 'clientes', label: 'Clientes', icon: Users },
   { id: 'reportes', label: 'Reportes', icon: BarChart3 },
-  { id: 'usuarios', label: 'Usuarios', icon: UserCog },
 ]
 
 const navItems = [
+  { id: 'resumen', label: 'Resumen', icon: LayoutDashboard },
   { id: 'ventas', label: 'Ventas', icon: ShoppingCart },
   { id: 'caja', label: 'Caja', icon: Wallet },
   { id: 'stock', label: 'Stock', icon: Boxes },
@@ -50,7 +51,7 @@ const recentSales = [
 export function DashboardMockup({ onOpenReport }: { onOpenReport?: () => void }) {
   const toast = useToast()
   const [tenantId, setTenantId] = useState(businesses[0].id)
-  const [tab, setTab] = useState('ventas')
+  const [tab, setTab] = useState('resumen')
 
   const tenant = useMemo(() => businesses.find((b) => b.id === tenantId)!, [tenantId])
   const plan = plans.find((p) => p.id === tenant.plan)!
@@ -146,7 +147,23 @@ export function DashboardMockup({ onOpenReport }: { onOpenReport?: () => void })
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.25 }}
             >
-              {(tab === 'ventas' || tab === 'reportes') && (
+              {tab === 'ventas' && (
+                <ul className="divide-y divide-[var(--color-line)] rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)]">
+                  {recentSales.map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-xs">
+                      <div className="min-w-0">
+                        <p className="truncate text-fg">{s.item}</p>
+                        <p className="text-[11px] text-faint">
+                          {s.id} · {s.pay}
+                        </p>
+                      </div>
+                      <span className="tnum shrink-0 font-semibold text-fg">{formatCurrency(s.amount)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {(tab === 'resumen' || tab === 'reportes') && (
                 <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
                   <div className="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-3">
                     <div className="mb-3 flex items-center justify-between">
