@@ -1,0 +1,26 @@
+---
+// Marquee de rubros: CSS puro (animate-marquee + pausa en hover), 0 JS.
+import { industriesMarquee } from '@/data/businesses'
+---
+
+<section class="relative border-y border-[var(--color-line)] bg-[var(--color-bg-soft)]/50 py-10">
+  <div class="container-page">
+    <p data-reveal class="mb-6 text-center text-sm font-medium text-muted">
+      Una plataforma preparada para distintos tipos de comercios
+    </p>
+  </div>
+  <div class="marquee-pause mask-fade-x group relative flex overflow-hidden">
+    <div class="animate-marquee flex shrink-0 items-center" style="--marquee-duration: 38s">
+      {
+        [0, 1].map(() =>
+          industriesMarquee.map((r) => (
+            <span class="mx-3 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--color-line)] bg-[var(--color-surface)] px-5 py-2.5 text-sm font-medium text-fg">
+              <span class="size-1.5 rounded-full accent-gradient" />
+              {r}
+            </span>
+          )),
+        )
+      }
+    </div>
+  </div>
+</section>

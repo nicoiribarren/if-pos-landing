@@ -1,0 +1,32 @@
+---
+import Section from './Section.astro'
+import SectionHeader from './SectionHeader.astro'
+import { problems } from '@/data/content'
+---
+
+<Section>
+  <SectionHeader
+    description="Tu negocio puede vender todos los días, pero si la caja, el stock y los clientes están desordenados, crecer se vuelve difícil."
+  >
+    Muchos comercios venden todos los días, pero no tienen un
+    <span class="text-gradient">sistema claro</span> para controlar lo que pasa
+  </SectionHeader>
+
+  <div class="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      problems.map(({ icon: Icon, title, text }, i) => (
+        <div
+          data-reveal
+          style={`--reveal-delay: ${(i % 4) * 0.08}s`}
+          class="group relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-colors duration-300 hover:border-[var(--color-line-strong)]"
+        >
+          <span class="grid size-11 place-items-center rounded-xl border border-[var(--color-line)] bg-[var(--color-bg-soft)] text-[var(--color-danger)] transition-transform duration-300 group-hover:-translate-y-0.5">
+            <Icon className="size-5" />
+          </span>
+          <h3 class="mt-4 text-base font-semibold text-fg">{title}</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+        </div>
+      ))
+    }
+  </div>
+</Section>

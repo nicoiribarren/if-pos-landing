@@ -1,0 +1,56 @@
+---
+import { Check, Sparkles, ArrowRight } from 'lucide-react'
+import Section from './Section.astro'
+import SectionHeader from './SectionHeader.astro'
+import { benefits } from '@/data/content'
+---
+
+<Section>
+  <SectionHeader description="Menos tareas manuales, más control y una mejor experiencia para vender todos los días.">
+    Beneficios <span class="text-gradient">concretos</span> para tu negocio
+  </SectionHeader>
+
+  <div class="mt-14 grid gap-3 lg:grid-cols-3">
+    <!-- Celda destacada -->
+    <div
+      data-reveal
+      class="relative flex flex-col justify-between overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-accent-bright)]/40 bg-gradient-to-br from-[var(--color-accent-soft)] to-transparent p-7 lg:row-span-2"
+    >
+      <div>
+        <span class="grid size-12 place-items-center rounded-xl accent-gradient text-[#04121f]">
+          <Sparkles className="size-6" />
+        </span>
+        <h3 class="mt-5 text-2xl font-bold text-fg">Tu local, convertido en una plataforma digital</h3>
+        <p class="mt-3 text-sm leading-relaxed text-muted">
+          Todo el negocio ordenado en un sistema simple para el vendedor y completo para el administrador, listo para
+          crecer por etapas.
+        </p>
+      </div>
+      <button
+        type="button"
+        data-modal="create"
+        class="mt-8 inline-flex h-11 w-fit cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#2563eb] to-[#3b82f6] px-5 text-sm font-semibold text-white shadow-[0_8px_30px_-8px_rgba(37,99,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_40px_-8px_rgba(34,211,238,0.55)] active:scale-[0.97]"
+      >
+        Crear mi negocio
+        <ArrowRight className="size-4" />
+      </button>
+    </div>
+
+    <div class="grid gap-3 sm:grid-cols-2 lg:col-span-2">
+      {
+        benefits.map((b, i) => (
+          <div
+            data-reveal
+            style={`--reveal-delay: ${(i % 4) * 0.06}s`}
+            class="flex items-center gap-3 rounded-[var(--radius)] border border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3.5 transition-colors hover:border-[var(--color-line-strong)]"
+          >
+            <span class="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)]">
+              <Check className="size-3.5" strokeWidth={2.5} />
+            </span>
+            <span class="text-sm text-fg">{b}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Section>
