@@ -101,6 +101,11 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.35, ease: EASE }}
           className="relative"
         >
+          {/* Glow detrás del mockup para asentarlo como el asset principal */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-8 -z-10 rounded-[3rem] bg-[radial-gradient(60%_60%_at_50%_40%,rgba(34,211,238,0.16),rgba(59,130,246,0.1),transparent_75%)] blur-2xl"
+          />
           <div className={reduce ? '' : 'animate-float'}>
             <DashboardMockup />
           </div>

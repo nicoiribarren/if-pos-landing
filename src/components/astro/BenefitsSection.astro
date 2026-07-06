@@ -3,9 +3,11 @@ import { Check, Sparkles, ArrowRight } from 'lucide-react'
 import Section from './Section.astro'
 import SectionHeader from './SectionHeader.astro'
 import { benefits } from '@/data/content'
+import Ambient from './Ambient.astro'
 ---
 
 <Section>
+  <Ambient slot="bg" position="top-right" color="violet" />
   <SectionHeader description="Menos tareas manuales, más control y una mejor experiencia para vender todos los días.">
     Beneficios <span class="text-gradient">concretos</span> para tu negocio
   </SectionHeader>

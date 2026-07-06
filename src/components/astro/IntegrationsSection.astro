@@ -1,6 +1,7 @@
 ---
 import Section from './Section.astro'
 import SectionHeader from './SectionHeader.astro'
+import Ambient from './Ambient.astro'
 import { integrations, integrationStatusLabels, type IntegrationStatus } from '@/data/integrations'
 
 const statusStyle: Record<IntegrationStatus, string> = {
@@ -12,6 +13,7 @@ const statusStyle: Record<IntegrationStatus, string> = {
 ---
 
 <Section>
+  <Ambient slot="bg" position="top-left" color="blue" />
   <SectionHeader description="Estas integraciones están contempladas a futuro. Se van habilitando según el roadmap del producto y el plan contratado.">
     Preparado para <span class="text-gradient">integrar</span> lo que tu negocio necesite
   </SectionHeader>
@@ -22,7 +24,7 @@ const statusStyle: Record<IntegrationStatus, string> = {
         <div
           data-reveal
           style={`--reveal-delay: ${(i % 3) * 0.07}s`}
-          class="group flex items-start gap-4 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-line-strong)]"
+          class="card card-hover group flex items-start gap-4 rounded-[var(--radius-lg)] p-5"
         >
           <span class="grid size-11 shrink-0 place-items-center rounded-xl border border-[var(--color-line)] bg-[var(--color-bg-soft)] text-fg transition-colors group-hover:text-[var(--color-accent-bright)]">
             <Icon className="size-5" />
