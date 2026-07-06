@@ -19,6 +19,8 @@ npm run preview    # servir el build
 |---|---|
 | Nombre del producto, empresa, contacto | `src/config/site.ts` |
 | Links del navbar / anchors | `src/config/nav.ts` |
+| Layout, SEO y scripts globales | `src/layouts/Layout.astro` |
+| Secciones estáticas (0 JS) | `src/components/astro/` |
 | Planes, precios y tabla comparativa | `src/data/plans.ts` |
 | Funcionalidades y modales | `src/data/features.ts` |
 | Rubros / casos de uso | `src/data/industries.ts` |
@@ -36,12 +38,18 @@ http://localhost:5173/?demo=leads
 
 ## Stack
 
-- Vite + React 19 + TypeScript
+- **Astro 7** (islands architecture) + React 19 + TypeScript
 - Tailwind CSS v4 (`@tailwindcss/vite`)
-- framer-motion (animaciones, respeta `prefers-reduced-motion`)
+- framer-motion en las islands (respeta `prefers-reduced-motion`)
+- nanostores (toasts/modales compartidos entre islands)
 - react-hook-form + zod (formularios validados)
-- lucide-react (íconos)
+- lucide-react (íconos, SSR en secciones estáticas)
 - Fuentes self-hosted: Space Grotesk / DM Sans / JetBrains Mono
+
+Las secciones sin interacción real son componentes `.astro` con **0 JS**
+(reveals y contadores via IntersectionObserver vanilla en `Layout.astro`).
+Lo interactivo (hero, mockups, pricing, forms) son islands React con
+`client:load` / `client:visible` / `client:idle`.
 
 ## Estructura
 
