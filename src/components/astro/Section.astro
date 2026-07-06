@@ -17,10 +17,11 @@ const pad = {
 }[spacing]
 ---
 
-<section id={id} class:list={['relative scroll-mt-24', pad, className]}>
+<section id={id} class:list={['relative scroll-mt-24 overflow-hidden', pad, className]}>
+  <slot name="bg" />
   {
     container ? (
-      <div class="container-page">
+      <div class="container-page relative">
         <slot />
       </div>
     ) : (

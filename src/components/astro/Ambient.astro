@@ -1,0 +1,33 @@
+---
+// Glow ambiental sutil anclado a una esquina de la sección, para dar
+// profundidad y ritmo al scroll oscuro. No interactivo.
+interface Props {
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center'
+  color?: 'blue' | 'cyan' | 'violet'
+  class?: string
+}
+
+const { position = 'top-right', color = 'blue', class: className } = Astro.props
+
+const colorMap = {
+  blue: 'rgba(59,130,246,0.14)',
+  cyan: 'rgba(34,211,238,0.12)',
+  violet: 'rgba(139,92,246,0.12)',
+}
+
+const posMap = {
+  'top-left': 'top-[-6rem] left-[-8rem]',
+  'top-right': 'top-[-6rem] right-[-8rem]',
+  'bottom-left': 'bottom-[-6rem] left-[-8rem]',
+  'bottom-right': 'bottom-[-6rem] right-[-8rem]',
+  center: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+}
+---
+
+<div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+  <div
+    class:list={['animate-aurora absolute size-[30rem] rounded-full blur-3xl', posMap[position], className]}
+    style={`background: radial-gradient(circle, ${colorMap[color]}, transparent 68%)`}
+  >
+  </div>
+</div>

@@ -1,10 +1,12 @@
 ---
 import { ShieldCheck } from 'lucide-react'
 import Section from './Section.astro'
+import Ambient from './Ambient.astro'
 import { securityPoints, securityBadges, securityDisclaimer } from '@/data/content'
 ---
 
 <Section id="seguridad">
+  <Ambient slot="bg" position="bottom-left" color="cyan" />
   <div class="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
     <div data-reveal>
       <div class="flex max-w-2xl flex-col gap-4">
@@ -34,9 +36,9 @@ import { securityPoints, securityBadges, securityDisclaimer } from '@/data/conte
           <div
             data-reveal
             style={`--reveal-delay: ${(i % 2) * 0.08}s`}
-            class="group rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-colors hover:border-[var(--color-line-strong)]"
+            class="card card-hover group rounded-[var(--radius-lg)] p-5"
           >
-            <span class="grid size-10 place-items-center rounded-xl bg-[var(--color-accent-soft)] text-[var(--color-accent-bright)]">
+            <span class="icon-chip size-10 rounded-xl">
               <Icon className="size-5" />
             </span>
             <h3 class="mt-4 text-sm font-semibold text-fg">{title}</h3>

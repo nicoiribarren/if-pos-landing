@@ -19,7 +19,7 @@ import { testimonials } from '@/data/testimonials'
         <figure
           data-reveal
           style={`--reveal-delay: ${(i % 3) * 0.08}s`}
-          class="flex flex-col rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-line-strong)]"
+          class="card card-hover flex flex-col rounded-[var(--radius-lg)] p-6"
         >
           <div class="flex gap-0.5">
             {Array.from({ length: t.rating }).map(() => (

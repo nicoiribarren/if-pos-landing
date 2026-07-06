@@ -60,8 +60,7 @@ export function MotionCard({
           : undefined
       }
       className={cn(
-        'group/card relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)]',
-        'transition-colors duration-300 hover:border-[var(--color-line-strong)]',
+        'card card-hover group/card relative overflow-hidden rounded-[var(--radius-lg)]',
         className,
       )}
     >
