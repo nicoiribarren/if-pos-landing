@@ -2,7 +2,7 @@ import { PlayCircle, CalendarClock, MessageCircle, Check } from 'lucide-react'
 import { Section } from '@/components/ui/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { SubscriptionForm } from '@/components/forms/SubscriptionForm'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 
 const points = [
   'Activamos tu negocio dentro de la plataforma',

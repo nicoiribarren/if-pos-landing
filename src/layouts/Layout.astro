@@ -50,6 +50,36 @@ const {
 
     <slot />
 
+    <!-- CTAs de secciones estáticas: [data-modal] dispara los modales del store.
+         El bundler dedupe hace que sea la MISMA instancia que usan las islands. -->
+    <script>
+      import { modals } from '@/stores/ui'
+      import type { PlanId } from '@/data/plans'
+
+      document.addEventListener('click', (e) => {
+        const trigger = (e.target as HTMLElement).closest<HTMLElement>('[data-modal]')
+        if (!trigger) return
+        const plan = trigger.dataset.plan as PlanId | undefined
+        switch (trigger.dataset.modal) {
+          case 'create':
+            modals.openCreate(plan)
+            break
+          case 'subscribe':
+            modals.openSubscribe(plan)
+            break
+          case 'demo':
+            modals.openDemo(trigger.dataset.preset)
+            break
+          case 'whatsapp':
+            modals.openWhatsapp()
+            break
+          case 'call':
+            modals.openCall()
+            break
+        }
+      })
+    </script>
+
     <!-- Reveal-on-scroll para secciones estáticas: un IO global, sin frameworks -->
     <script>
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches

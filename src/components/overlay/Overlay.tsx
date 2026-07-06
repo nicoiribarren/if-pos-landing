@@ -1,97 +1,73 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+// Island global de UI: toasts + modales + inspector de leads.
+// Se monta UNA vez en la página (client:load). Cualquier otra island dispara
+// modales/toasts a través del store (@/stores/ui), sin contexts compartidos.
+import { useState } from 'react'
+import { useStore } from '@nanostores/react'
 import { MessageCircle, CalendarClock, Check } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { SubscriptionForm } from '@/components/forms/SubscriptionForm'
 import { DemoForm } from '@/components/forms/DemoForm'
 import { CreateBusinessForm } from '@/components/forms/CreateBusinessForm'
+import { LeadsInspector } from '@/components/modals/LeadsInspector'
+import { ToastViewport, useToast } from '@/hooks/useToast'
+import { $modal, closeModal, modals } from '@/stores/ui'
 import { site } from '@/config/site'
-import type { PlanId } from '@/data/plans'
-import { useToast } from '@/hooks/useToast'
 import { saveLead } from '@/utils/leadStorage'
 import { cn } from '@/utils/cn'
 
-type ModalKind = 'subscribe' | 'demo' | 'create' | 'whatsapp' | 'call' | null
-
-interface ModalContextValue {
-  openSubscribe: (plan?: PlanId) => void
-  openDemo: (preset?: string) => void
-  openCreate: (plan?: PlanId) => void
-  openWhatsapp: () => void
-  openCall: () => void
+/** Misma API que el viejo context: `const { openSubscribe } = useModals()`. */
+export function useModals() {
+  return modals
 }
 
-const ModalContext = createContext<ModalContextValue | null>(null)
-
-export function ModalProvider({ children }: { children: ReactNode }) {
-  const [kind, setKind] = useState<ModalKind>(null)
-  const [plan, setPlan] = useState<PlanId | undefined>()
-  const [preset, setPreset] = useState<string | undefined>()
-
-  const close = useCallback(() => setKind(null), [])
-
-  const value = useMemo<ModalContextValue>(
-    () => ({
-      openSubscribe: (p) => {
-        setPlan(p)
-        setKind('subscribe')
-      },
-      openDemo: (pr) => {
-        setPreset(pr)
-        setKind('demo')
-      },
-      openCreate: (p) => {
-        setPlan(p)
-        setKind('create')
-      },
-      openWhatsapp: () => setKind('whatsapp'),
-      openCall: () => setKind('call'),
-    }),
-    [],
-  )
+export function Overlay() {
+  const modal = useStore($modal)
 
   return (
-    <ModalContext.Provider value={value}>
-      {children}
+    <>
+      <ToastViewport />
 
       <Modal
-        open={kind === 'subscribe'}
-        onClose={close}
+        open={modal?.kind === 'subscribe'}
+        onClose={closeModal}
         size="lg"
         title="Suscribite al sistema"
         description="Completá tus datos y activamos tu negocio dentro de la plataforma."
       >
-        <SubscriptionForm defaultPlan={plan} onDone={close} />
+        <SubscriptionForm defaultPlan={modal?.plan} onDone={closeModal} />
       </Modal>
 
       <Modal
-        open={kind === 'demo'}
-        onClose={close}
+        open={modal?.kind === 'demo'}
+        onClose={closeModal}
         size="lg"
         title="Pedí una demo"
         description="Te mostramos el sistema funcionando según lo que quieras ver."
       >
-        <DemoForm preset={preset} onDone={close} />
+        <DemoForm preset={modal?.preset} onDone={closeModal} />
       </Modal>
 
       <Modal
-        open={kind === 'create'}
-        onClose={close}
+        open={modal?.kind === 'create'}
+        onClose={closeModal}
         size="md"
         title="Creá tu negocio"
-        description="Simulamos el alta de tu negocio dentro del SaaS, con su espacio privado."
+        description="Elegí tu plan y activá tu negocio con su espacio privado."
       >
-        <CreateBusinessForm defaultPlan={plan} onDone={close} />
+        <CreateBusinessForm defaultPlan={modal?.plan} onDone={closeModal} />
       </Modal>
 
-      <Modal open={kind === 'whatsapp'} onClose={close} size="sm" title="Contacto por WhatsApp">
-        <WhatsappBody onClose={close} />
+      <Modal open={modal?.kind === 'whatsapp'} onClose={closeModal} size="sm" title="Contacto por WhatsApp">
+        <WhatsappBody onClose={closeModal} />
       </Modal>
 
-      <Modal open={kind === 'call'} onClose={close} size="sm" title="Agendar una llamada">
-        <CallBody onClose={close} />
+      <Modal open={modal?.kind === 'call'} onClose={closeModal} size="sm" title="Agendar una llamada">
+        <CallBody onClose={closeModal} />
       </Modal>
-    </ModalContext.Provider>
+
+      <LeadsInspector />
+    </>
   )
 }
 
@@ -181,11 +157,4 @@ function CallBody({ onClose }: { onClose: () => void }) {
       <p className="text-center text-xs text-faint">Modo demo: no se conecta ningún calendario real.</p>
     </div>
   )
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useModals() {
-  const ctx = useContext(ModalContext)
-  if (!ctx) throw new Error('useModals must be used within ModalProvider')
-  return ctx
 }

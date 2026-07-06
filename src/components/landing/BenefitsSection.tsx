@@ -4,7 +4,7 @@ import { Section } from '@/components/ui/Section'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { benefits } from '@/data/content'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { staggerParent, staggerChild, viewportOnce } from '@/utils/animationVariants'
 
 export function BenefitsSection() {

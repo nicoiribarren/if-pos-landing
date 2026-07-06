@@ -7,7 +7,7 @@ import { MotionCard } from '@/components/ui/MotionCard'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { features, type Feature } from '@/data/features'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { staggerParent, staggerChild, viewportOnce } from '@/utils/animationVariants'
 
 export function FeaturesSection() {

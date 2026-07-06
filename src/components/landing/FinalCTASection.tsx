@@ -3,7 +3,7 @@ import { ArrowRight, PlayCircle, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { GlowBackground } from '@/components/effects/GlowBackground'
 import { AnimatedGrid } from '@/components/effects/AnimatedGrid'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { EASE } from '@/utils/animationVariants'
 
 const perks = ['Sin instalar nada', 'Planes mensuales', 'Datos separados por negocio', 'Instalable como PWA']

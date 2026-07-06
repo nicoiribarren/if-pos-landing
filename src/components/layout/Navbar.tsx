@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { navLinks, sectionIds } from '@/config/nav'
 import { useActiveSection } from '@/hooks/useActiveSection'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { cn } from '@/utils/cn'
 

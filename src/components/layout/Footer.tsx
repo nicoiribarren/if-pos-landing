@@ -3,7 +3,7 @@ import { Logo } from '@/components/ui/Logo'
 import { Badge } from '@/components/ui/Badge'
 import { navLinks } from '@/config/nav'
 import { site } from '@/config/site'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 
 const featureLinks = ['Punto de venta', 'Caja', 'Stock', 'Clientes', 'Reportes', 'Usuarios']
 

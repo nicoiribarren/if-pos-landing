@@ -7,7 +7,7 @@ import { AnimatedGrid } from '@/components/effects/AnimatedGrid'
 import { MouseSpotlight } from '@/components/effects/MouseSpotlight'
 import { DashboardMockup } from '@/components/mockups/DashboardMockup'
 import { CodeTerminal } from '@/components/mockups/CodeTerminal'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 import { EASE } from '@/utils/animationVariants'
 
 const headlineLines = [

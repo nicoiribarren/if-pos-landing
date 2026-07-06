@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { MessageCircle, PlayCircle } from 'lucide-react'
-import { useModals } from '@/components/modals/ModalProvider'
+import { useModals } from '@/components/overlay/Overlay'
 
 /** Floating WhatsApp + demo buttons that appear after the hero. */
 export function FloatingActions() {
